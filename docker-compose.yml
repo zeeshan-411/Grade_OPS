@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gradeops-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gradeops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gradeops_dev_pw}
+      POSTGRES_DB: ${POSTGRES_DB:-gradeops}
+    ports:
+      - "5432:5432"
+    volumes:
+      - gradeops_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gradeops} -d ${POSTGRES_DB:-gradeops}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: gradeops-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      POSTGRES_HOST: db
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/google_storage.json
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./gradeops:/app/gradeops:ro
+      - ./google_storage.json:/secrets/google_storage.json:ro
+      - gradeops_files:/data
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  ml-worker:
+    build: ./ml-worker
+    container_name: gradeops-ml-worker
+    profiles: ["ml"]
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      HF_HOME: /models
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8001/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  gradeops_pgdata:
+  gradeops_files:

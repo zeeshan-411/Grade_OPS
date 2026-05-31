@@ -1,0 +1,49 @@
+# ───── Secrets (NEVER commit) ─────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+frontend/.env
+frontend/.env.local
+
+# GCP service-account JSON — must never be committed.
+google_storage.json
+*-credentials.json
+service-account*.json
+
+# ───── Python ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.eggs/
+*.egg-info/
+build/
+dist/
+
+# ───── Node / Vite / React ────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/dist-ssr/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ───── Editor / OS / tooling ──────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+.claude/
+
+# ───── Project-local data ─────────────────────────────────────────────
+# Generated sample PDFs (regenerate with: python samples/generate_sample_pdfs.py)
+samples/pdfs/
+*.tmp
