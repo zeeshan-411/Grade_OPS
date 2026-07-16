@@ -31,6 +31,9 @@ node_modules/
 frontend/dist/
 frontend/.vite/
 frontend/dist-ssr/
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -47,3 +50,7 @@ pnpm-debug.log*
 # Generated sample PDFs (regenerate with: python samples/generate_sample_pdfs.py)
 samples/pdfs/
 *.tmp
+
+# ───── Personal notes (not part of the project) ──────────────────────
+STUDY_NOTES.md
+gradeops_rubric_engine_v3.md

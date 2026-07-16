@@ -133,9 +133,7 @@ in as TA in a second browser to see the review queue.
 │   ├── Dockerfile          torch CPU + transformers + nougat pre-cached
 │   └── app.py              FastAPI exposing /ocr/nougat
 ├── samples/                Sample rubric, student answers, generator script
-├── docker-compose.yml      db + backend + ml-worker (profile-gated)
-├── TECHNICAL_REPORT.md     Architecture and design rationale
-└── DEMO_SCRIPT.md          On-camera walkthrough
+└── docker-compose.yml      db + backend + ml-worker (profile-gated)
 ```
 
 ## Environment
@@ -191,13 +189,6 @@ weights (~250 MB) are pre-cached into the Docker image at build time.
 | `POST` | `/api/v1/grades/{grade_id}/review` | TA | Approve / override / flag a question |
 
 Full schema at http://localhost:8000/docs once the backend is running.
-
-## Documentation
-
-- [TECHNICAL_REPORT.md](TECHNICAL_REPORT.md) — architecture, design choices,
-  failure modes.
-- [DEMO_SCRIPT.md](DEMO_SCRIPT.md) — scene-by-scene walkthrough for
-  recording or live presentation.
 
 ## Tests
 
