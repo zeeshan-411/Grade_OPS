@@ -20,3 +20,7 @@ httpx>=0.27.0
 
 # Cloud storage (optional — needed when STORAGE_BACKEND=gcs)
 google-cloud-storage>=2.18.0
+
+# Dev / tests (gradeops/tests)
+pytest>=8.0.0
+pytest-asyncio>=0.23.0

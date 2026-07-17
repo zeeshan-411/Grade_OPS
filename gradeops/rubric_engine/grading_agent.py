@@ -58,17 +58,6 @@ def _build_llm() -> ChatGoogleGenerativeAI:
 llm = _build_llm()
 
 
-def set_model(model: str) -> None:
-    """Swap the global LLM to a different Gemini model at runtime.
-
-    Used by the Streamlit app to honor the model setting without forcing a process
-    restart. Keeps the same singleton `llm` reference that the graph nodes capture.
-    """
-    global llm
-    os.environ["GEMINI_MODEL"] = model
-    llm = _build_llm()
-
-
 class GradingState(TypedDict, total=False):
     # Inputs
     student_id: str

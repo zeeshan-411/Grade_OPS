@@ -4,11 +4,10 @@ Loads the sample rubric, runs three fake student submissions through the
 LangGraph grading pipeline against Google Gemini, and prints the results.
 
 Usage:
-    cd "/Users/zeeshan/Desktop/Code/CC Project/GradeOPS"
-    .venv/bin/python -m gradeops.run_demo
+    python -m gradeops.run_demo
 
-The Gemini API key is read from ../.env (GEMINI_API_KEY). Override the model
-by setting GEMINI_MODEL (default: gemini-2.0-flash).
+The Gemini API key is read from .env (GEMINI_API_KEY). Override the model
+by setting GEMINI_MODEL (default: gemini-2.5-flash-lite).
 """
 from __future__ import annotations
 

@@ -1,9 +1,8 @@
 """Scanned-PDF → text extraction via Gemini Vision.
 
-Used by the Streamlit frontend when a user uploads exam scans instead of
-pre-OCR'd text. Each PDF must be named `{student_id}_{question_id}.pdf`
-(e.g. `STU001_Q1.pdf`) so we can map the extracted text back to the
-rubric without an extra UI step.
+Used by the backend grading service when OCR_ENGINE=gemini. Each PDF must be
+named `{student_id}_{question_id}.pdf` (e.g. `STU001_Q1.pdf`) so we can map
+the extracted text back to the rubric.
 """
 from __future__ import annotations
 
@@ -121,9 +120,9 @@ async def extract_from_pdfs(
 ) -> list[dict]:
     """Extract text from a list of (filename, pdf_bytes) tuples.
 
-    `engine` selects the OCR backend:
-        "gemini"  — uses the LangChain `llm` (Gemini Vision via ChatGoogleGenerativeAI)
-        "mathpix" — uses the Mathpix v3/text endpoint (better on messy handwriting + math)
+    `engine` must be "gemini" — Gemini Vision via the LangChain `llm` instance.
+    (The alternative nougat engine lives in the ml-worker service and is called
+    through `app.services.ocr_client` instead of this module.)
 
     Returns per-file dicts:
         {"student_id", "question_id", "text", "ocr_confidence",
@@ -135,12 +134,7 @@ async def extract_from_pdfs(
     completed = 0
     lock = asyncio.Lock()
 
-    engine_extract = None
-    if engine == "mathpix":
-        from .mathpix_ocr import extract_text_from_pdf as engine_extract  # noqa: WPS433
-    elif engine == "gcv":
-        from .gcv_ocr import extract_text_from_pdf as engine_extract  # noqa: WPS433
-    elif engine != "gemini":
+    if engine != "gemini":
         raise ValueError(f"Unknown OCR engine: {engine!r}")
 
     async def run_one(filename: str, content: bytes) -> dict:
@@ -159,12 +153,9 @@ async def extract_from_pdfs(
             sid, qid = parsed
             async with sem:
                 try:
-                    if engine in ("mathpix", "gcv"):
-                        text, conf = await engine_extract(content, dpi=dpi)
-                    else:
-                        if llm is None:
-                            raise ValueError("Gemini engine requires a langchain `llm` instance.")
-                        text, conf = await extract_text_from_pdf(content, llm, dpi=dpi)
+                    if llm is None:
+                        raise ValueError("Gemini engine requires a langchain `llm` instance.")
+                    text, conf = await extract_text_from_pdf(content, llm, dpi=dpi)
                     result = {
                         "student_id": sid,
                         "question_id": qid,
